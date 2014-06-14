@@ -32,7 +32,8 @@ public class Bullet extends Image{
 		body.createFixture(fd);
 		setSize(width, height);
 		setScaling(Scaling.stretch);
-		body.setTransform(x - width, y - height, angle);
+		angle += MathUtils.PI / 2;
+		body.setTransform(x, y, angle);
 		setPosition(body.getPosition().x - width / 2, body.getPosition().y - height / 2);
 		setRotation(MathUtils.radiansToDegrees * angle);
 		setOrigin(width / 2, height / 2);

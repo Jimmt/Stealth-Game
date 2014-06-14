@@ -11,7 +11,7 @@ import com.badlogic.gdx.tools.imagepacker.TexturePacker2;
 public class Main {
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
-		cfg.title = "City Game";
+		cfg.title = "Top Down Game";
 		cfg.useGL20 = true;
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		cfg.x = 0;

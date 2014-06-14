@@ -3,38 +3,101 @@ pack.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+arms
+  rotate: false
+  xy: 916, 477
+  size: 43, 27
+  orig: 43, 27
+  offset: 0, 0
+  index: -1
 char-back
   rotate: false
-  xy: 874, 265
+  xy: 874, 367
   size: 40, 137
   orig: 40, 137
   offset: 0, 0
   index: -1
 char-front
   rotate: false
-  xy: 644, 42
+  xy: 644, 144
   size: 41, 137
   orig: 41, 137
   offset: 0, 0
   index: -1
 char-side
   rotate: false
-  xy: 687, 43
+  xy: 687, 145
   size: 21, 136
   orig: 21, 136
   offset: 0, 0
   index: -1
-splash
+head
+  rotate: false
+  xy: 874, 295
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+laser_blue
+  rotate: false
+  xy: 710, 227
+  size: 13, 54
+  orig: 13, 54
+  offset: 0, 0
+  index: -1
+leftarm
+  rotate: false
+  xy: 916, 461
+  size: 12, 14
+  orig: 12, 14
+  offset: 0, 0
+  index: -1
+leftforearm
   rotate: false
   xy: 2, 2
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+new
+  rotate: false
+  xy: 874, 311
+  size: 30, 54
+  orig: 30, 54
+  offset: 0, 0
+  index: -1
+rightarm
+  rotate: false
+  xy: 76, 87
+  size: 14, 15
+  orig: 14, 15
+  offset: 0, 0
+  index: -1
+rightforearm
+  rotate: false
+  xy: 644, 123
+  size: 21, 19
+  orig: 21, 19
+  offset: 0, 0
+  index: -1
+splash
+  rotate: false
+  xy: 2, 104
   size: 640, 400
   orig: 640, 400
   offset: 0, 0
   index: -1
 test
   rotate: false
-  xy: 644, 181
+  xy: 644, 283
   size: 228, 221
   orig: 228, 221
+  offset: 0, 0
+  index: -1
+topdown
+  rotate: false
+  xy: 2, 22
+  size: 72, 80
+  orig: 72, 80
   offset: 0, 0
   index: -1

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="medieval" tilewidth="32" tileheight="32">
+  <image source="medtileset.png" width="640" height="400"/>
+  <terraintypes>
+   <terrain name="New Terrain" tile="-1"/>
+   <terrain name="stone" tile="0"/>
+   <terrain name="dirt" tile="2"/>
+  </terraintypes>
+  <tile id="0" terrain="1,1,1,1"/>
+  <tile id="2" terrain="2,2,,2"/>
+  <tile id="21" terrain=",0,,"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt2FkKwkAQRVHFNbhfl64fCpYDiemSKttzoL+c4F1i0N0OAAAAAAAAAAAAAAAAAAAAAAAAAAAAgH9y+OEzo+pN9YiqN9Ujqt5Uj6h6Uz2i6k31iLK2OV7O/nqWnnt73uU1Jz2ib/RYe/R4lt1jLT1ey/w+/7TH6OfNyPXRix69ZPe4P4/cz5dl97ht/Hi9vHjspMezrB5L18zo9nroUUGPXjK2fvdbYk2Pkfv7jLJ6ZBw99OhGj15G7qf3TbYaud/PSI9e9OhFj1706EWPXvToRY9e9OhFj1706CWjhf+v8ujRix69ZPXY+j56RFt37HBmVL2pHlH1pnpE1ZvqEVVvqkdUvake0Rnu3SgT
+  </data>
+ </layer>
+</map>

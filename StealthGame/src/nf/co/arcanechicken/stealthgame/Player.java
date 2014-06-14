@@ -3,20 +3,27 @@ package nf.co.arcanechicken.stealthgame;
 import java.util.HashMap;
 import java.util.Map;
 
+import box2dLight.ConeLight;
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.JointDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -27,90 +34,100 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 
 public class Player extends Image {
-	private Map<TextureRegion, Drawable> drawables;
-	private Array<Item> inventory;
-	private Array<Item> equipped;
+	private Map<TextureRegion, Drawable> walkDrawables;
+	private Array<Bullet> bullets;
+	private Bullet bullet;
 	private TextureAtlas atlas;
-	private Array<AtlasRegion> regions;
 	private World world;
 	private Body body;
-	public Vector2 temp, centerPosition, mouse, dir;
-	private float width = 1, height = 3f, ry, lastAttackTime = 999f, attackCap = 0.5f; //width/height should be same ratio as original pic
-	private float dx, dy, angle;
-	
+	public Vector2 temp, centerPosition, mouse, dir, dir1, ext, sclDir;
+	private float width = 2f, height = 2.222f, ry, lastShotTime = 999f, shotCap = 0.5f;
+	private float dx, dy, angle, rotation;
+	private Circle circle;
 	private Texture walkSheet;
 	private Animation walkAnimation;
 	private float walkAnimationStateTime; // do animation later, based on spine
+	private ConeLight cl;
+	private PointLight pl;
 
-	public Player(Array<AtlasRegion> regions, TextureAtlas atlas, World world) {
+	public Player(Array<AtlasRegion> regions, TextureAtlas atlas, World world, RayHandler rh) {
 		super(regions.get(0));
 
 		this.atlas = atlas;
 		this.world = world;
 
+		circle = new Circle();
 
+		bullets = new Array<Bullet>();
 
-		this.regions = regions;
-		
-		drawables = new HashMap<TextureRegion, Drawable>();
+		walkDrawables = new HashMap<TextureRegion, Drawable>();
 
 		walkAnimation = new Animation(0.2f, regions);
 
 		for (AtlasRegion region : regions) {
-			drawables.put(region, new TextureRegionDrawable(region));
+			walkDrawables.put(region, new TextureRegionDrawable(region));
 		}
 
-		equipped = new Array<Item>();
 		temp = new Vector2(0, 0);
 		initBody();
 
+//		cl = new ConeLight(rh, 32, new Color(0f, 0.0f, 0.0f, 1.0f), 3, 0, 0, 0, 1);
+		pl = new PointLight(rh, 32, new Color(0f, 0.0f, 0.0f, 0.8f), 3, 0, 0);
 	}
-
+	
 	public void checkMouseRotation() {
-		
 		centerPosition = new Vector2(Constants.WIDTH / 2, Constants.HEIGHT / 2);
 
-		dx = Gdx.input.getX();
-		dy = Constants.HEIGHT - Gdx.input.getY();
-
-		mouse = new Vector2(dx, dy);
+		mouse = new Vector2(Gdx.input.getX(), Constants.HEIGHT - Gdx.input.getY());
 
 		dir = mouse.sub(centerPosition);
 		angle = dir.angle();
+
 	}
-	
+	public float getAngle(){
+		return angle;
+	}
+
 
 	public void act(float delta) {
 		super.act(delta);
 
 		checkMouseRotation();
-		
-		width = getDrawable().getMinWidth() / 40f;
-		height = getDrawable().getMinHeight() / 40f;
-		
-		getStage().getCamera().position.set(body.getPosition(), 0);
 
-		if (Gdx.input.isButtonPressed(Buttons.LEFT) && lastAttackTime > attackCap) {
-			attack();
-			lastAttackTime = 0f;
+		if (Gdx.input.isButtonPressed(Buttons.LEFT) && lastShotTime > shotCap) {
+			fire();
+			lastShotTime = 0f;
 		} else {
-			lastAttackTime += delta;
+			lastShotTime += delta;
 		}
+
+		getStage().getCamera().position.set(body.getPosition().x, body.getPosition().y, 0);
 
 		setOrigin(width / 2, height / 2);
 
-		body.setTransform(body.getPosition().x, body.getPosition().y, 0);
+		body.setTransform(body.getPosition().x, body.getPosition().y, MathUtils.degreesToRadians
+				* angle - MathUtils.PI / 2);
+		setRotation(body.getTransform().getRotation() * MathUtils.radiansToDegrees);
 
 		setPosition(body.getPosition().x - width / 2, body.getPosition().y - height / 2);
 
 	}
+	
 
-	public void attack() {
-		for(int i = 0; i < equipped.size; i++){
-			if(equipped.get(i) instanceof Weapon){
-				
-			}
-		}
+	public void fire() {
+		float startX = body.getPosition().x + MathUtils.cos(MathUtils.degreesToRadians * angle);
+		float startY = body.getPosition().y + MathUtils.sin(MathUtils.degreesToRadians * angle);
+
+		bullet = Bullet.create(atlas, world, startX, startY, MathUtils.degreesToRadians * angle,
+				"laser_blue");
+
+		getStage().addActor(bullet);
+
+		bullet.getBody().setLinearVelocity(dir.nor().scl(40f));
+		bullets.add(bullet);
+
+		
+		// bullet type class, NEED DESIGN
 	}
 
 	public void setFriction(float friction) {
@@ -128,14 +145,13 @@ public class Player extends Image {
 
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.fixedRotation = true;
-		bodyDef.linearDamping = 25.0f;
+		bodyDef.linearDamping = 25f;
 		bodyDef.type = BodyType.DynamicBody;
 		body = world.createBody(bodyDef);
 
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = box;
 		fixtureDef.density = 1.0f;
-		fixtureDef.friction = 10.0f;
 		fixtureDef.restitution = 0.0f;
 
 		body.createFixture(fixtureDef);
@@ -143,76 +159,47 @@ public class Player extends Image {
 		body.setUserData("body");
 
 		setPosition(body.getPosition().x - width / 2, body.getPosition().y - height / 2);
-//		setSize(width, height);
-		setSize(this.getDrawable().getMinWidth() / 40f, this.getDrawable().getMinHeight() / 40f);
-		setScaling(Scaling.fit);
+		
+		setSize(width, height);
+		setScaling(Scaling.stretch);
 		setAlign(Align.center);
-	}
-	
-	public void moveOperate(String regionName){
-		for(int i = 0; i < regions.size; i++){
-			if(regions.get(i).name.equals(regionName)){
-				this.setDrawable(drawables.get(regions.get(i)));
-			}
-		}
-		((PolygonShape) body.getFixtureList().get(0).getShape()).setAsBox(width / 2, height / 2);
+
 	}
 
 	public void moveUp(float delta) {
 		body.setLinearVelocity(temp.set(body.getLinearVelocity().x, 200 * delta));
-		moveOperate("char-back");
+		
 
 	}
 
 	public void moveDown(float delta) {
 		body.setLinearVelocity(temp.set(body.getLinearVelocity().x, -200 * delta));
-		moveOperate("char-front");
-
 	}
 
 	public void moveRight(float delta) {
 		body.setLinearVelocity(temp.set(200 * delta, body.getLinearVelocity().y));
 
-		for(int i = 0; i < regions.size; i++){
-			if(regions.get(i).name.equals("char-side")){
-				if(regions.get(i).isFlipX()){
-					regions.get(i).flip(true, false);
-				}
-				this.setDrawable(drawables.get(regions.get(i)));
-			}
-		}
-		((PolygonShape) body.getFixtureList().get(0).getShape()).setAsBox(width / 2, height / 2);
 	}
 
 	public void moveLeft(float delta) {
 		body.setLinearVelocity(temp.set(-200 * delta, body.getLinearVelocity().y));
 
-		for(int i = 0; i < regions.size; i++){
-			if(regions.get(i).name.equals("char-side")){
-				if(!regions.get(i).isFlipX()){
-					regions.get(i).flip(true, false);
-				}
-				this.setDrawable(drawables.get(regions.get(i)));
-			}
-		}
-		((PolygonShape) body.getFixtureList().get(0).getShape()).setAsBox(width / 2, height / 2);
 	}
 
 	public Body getBody() {
 		return body;
 	}
 
-	public static Player create(TextureAtlas atlas, World world) {
+	public static Player create(TextureAtlas atlas, World world, RayHandler rh) {
 		Array<AtlasRegion> regions = new Array<AtlasRegion>();
 		for (int i = 0; i < atlas.getRegions().size; i++) {
 			System.out.println(atlas.getRegions().get(i).name);
-			if (atlas.getRegions().get(i).name.contains("char")) {
+			if (atlas.getRegions().get(i).name.contains("topdown")) {
 				regions.add(atlas.getRegions().get(i));
 			}
 		}
-		System.out.println(regions.size);
 
-		return new Player(regions, atlas, world);
+		return new Player(regions, atlas, world, rh);
 	}
 
 }

@@ -5,4 +5,3 @@ libs/
 target/
 *.class
 *.jar
-/bin
