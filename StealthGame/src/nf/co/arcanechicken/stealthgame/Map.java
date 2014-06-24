@@ -13,18 +13,24 @@ public class Map extends Actor {
 	private TmxMapLoader tmxL;
 	private OrthogonalTiledMapRenderer renderer;
 	private OrthographicCamera oc;
+	private boolean[][] collisions;
 
 	public Map(String path, OrthographicCamera oc) {
 		tmxL = new TmxMapLoader();
 		map = tmxL.load(path);
-		
+
 		this.oc = oc;
-		
+
 		renderer = new OrthogonalTiledMapRenderer(map, Constants.scale);
 		renderer.setMap(map);
-	
-		
-		
+
+		collisions = new boolean[map.getProperties().get("width", Integer.class)][map
+				.getProperties().get("height", Integer.class)];
+
+	}
+
+	public boolean[][] getCollisions() {
+		return collisions;
 	}
 
 	public TiledMap getMap() {
@@ -39,12 +45,12 @@ public class Map extends Actor {
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
-		
+
 		renderer.setView(oc);
 		batch.end();
 		renderer.render();
 		batch.begin();
 
 	}
-	
+
 }

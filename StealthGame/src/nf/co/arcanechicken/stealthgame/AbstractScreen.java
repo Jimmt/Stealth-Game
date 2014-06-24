@@ -137,7 +137,7 @@ public abstract class AbstractScreen implements Screen {
 
 		getBatch().setProjectionMatrix(cam.combined);
 		
-		logger.log();
+//		logger.log();
 		
 	}
 
@@ -155,7 +155,7 @@ public abstract class AbstractScreen implements Screen {
 	}
 
 	public void dispose() {
-
+		
 	}
 
 }

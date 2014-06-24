@@ -35,18 +35,14 @@ import com.badlogic.gdx.utils.Scaling;
 
 public class Player extends Image {
 	private Map<TextureRegion, Drawable> walkDrawables;
-	private Array<Bullet> bullets;
-	private Bullet bullet;
+	private Array<Arrow> arrows;
+	private Arrow arrow;
 	private TextureAtlas atlas;
 	private World world;
 	private Body body;
 	public Vector2 temp, centerPosition, mouse, dir, dir1, ext, sclDir;
-	private float width = 2f, height = 2.222f, ry, lastShotTime = 999f, shotCap = 0.5f;
-	private float dx, dy, angle, rotation;
-	private Circle circle;
-	private Texture walkSheet;
-	private Animation walkAnimation;
-	private float walkAnimationStateTime; // do animation later, based on spine
+	private float width, height, ry, lastShotTime = 999f, shotCap = 0.5f;
+	private float angle;
 	private ConeLight cl;
 	private PointLight pl;
 
@@ -56,23 +52,25 @@ public class Player extends Image {
 		this.atlas = atlas;
 		this.world = world;
 
-		circle = new Circle();
 
-		bullets = new Array<Bullet>();
+		arrows = new Array<Arrow>();
 
 		walkDrawables = new HashMap<TextureRegion, Drawable>();
 
-		walkAnimation = new Animation(0.2f, regions);
 
 		for (AtlasRegion region : regions) {
 			walkDrawables.put(region, new TextureRegionDrawable(region));
 		}
 
 		temp = new Vector2(0, 0);
-		initBody();
+		
 
 //		cl = new ConeLight(rh, 32, new Color(0f, 0.0f, 0.0f, 1.0f), 3, 0, 0, 0, 1);
-		pl = new PointLight(rh, 32, new Color(0f, 0.0f, 0.0f, 0.8f), 3, 0, 0);
+		pl = new PointLight(rh, 32, new Color(0f, 0.0f, 0.0f, 0.99f), 4, 0, 0);
+		
+		width = getDrawable().getMinWidth() * Constants.scale * 2;
+		height = getDrawable().getMinHeight() * Constants.scale * 2;
+		initBody();
 	}
 	
 	public void checkMouseRotation() {
@@ -101,7 +99,7 @@ public class Player extends Image {
 			lastShotTime += delta;
 		}
 
-		getStage().getCamera().position.set(body.getPosition().x, body.getPosition().y, 0);
+		getStage().getCamera().position.set(Math.round(body.getPosition().x * 80f) / 80f, Math.round(body.getPosition().y * 80f) / 80f, 0);
 
 		setOrigin(width / 2, height / 2);
 
@@ -115,16 +113,16 @@ public class Player extends Image {
 	
 
 	public void fire() {
-		float startX = body.getPosition().x + MathUtils.cos(MathUtils.degreesToRadians * angle);
-		float startY = body.getPosition().y + MathUtils.sin(MathUtils.degreesToRadians * angle);
+		float startX = body.getPosition().x + MathUtils.cos(MathUtils.degreesToRadians * angle) / 4;
+		float startY = body.getPosition().y + MathUtils.sin(MathUtils.degreesToRadians * angle) / 4;
 
-		bullet = Bullet.create(atlas, world, startX, startY, MathUtils.degreesToRadians * angle,
-				"laser_blue");
+		arrow = Arrow.create(atlas, world, startX, startY, MathUtils.degreesToRadians * angle,
+				"arrow");
 
-		getStage().addActor(bullet);
+		getStage().addActor(arrow);
 
-		bullet.getBody().setLinearVelocity(dir.nor().scl(40f));
-		bullets.add(bullet);
+		arrow.getBody().setLinearVelocity(dir.nor().scl(20f));
+		arrows.add(arrow);
 
 		
 		// bullet type class, NEED DESIGN
@@ -153,10 +151,12 @@ public class Player extends Image {
 		fixtureDef.shape = box;
 		fixtureDef.density = 1.0f;
 		fixtureDef.restitution = 0.0f;
+		fixtureDef.filter.categoryBits = Bits.PLAYER;
+		fixtureDef.filter.maskBits = (short)(Bits.ENEMY | Bits.OBSTACLE);
 
 		body.createFixture(fixtureDef);
 
-		body.setUserData("body");
+		body.setUserData(new Box2DUserData("player", null));
 
 		setPosition(body.getPosition().x - width / 2, body.getPosition().y - height / 2);
 		
@@ -167,23 +167,28 @@ public class Player extends Image {
 	}
 
 	public void moveUp(float delta) {
+		if(body.getPosition().y < 110f * 64f){
 		body.setLinearVelocity(temp.set(body.getLinearVelocity().x, 200 * delta));
-		
+		}
 
 	}
 
 	public void moveDown(float delta) {
+		if(body.getPosition().y > 0){
 		body.setLinearVelocity(temp.set(body.getLinearVelocity().x, -200 * delta));
+		}
 	}
 
 	public void moveRight(float delta) {
+		if(body.getPosition().x < 100f * 64f){
 		body.setLinearVelocity(temp.set(200 * delta, body.getLinearVelocity().y));
-
+		}
 	}
 
 	public void moveLeft(float delta) {
+		if(body.getPosition().x > 0){
 		body.setLinearVelocity(temp.set(-200 * delta, body.getLinearVelocity().y));
-
+		}
 	}
 
 	public Body getBody() {
@@ -194,7 +199,7 @@ public class Player extends Image {
 		Array<AtlasRegion> regions = new Array<AtlasRegion>();
 		for (int i = 0; i < atlas.getRegions().size; i++) {
 			System.out.println(atlas.getRegions().get(i).name);
-			if (atlas.getRegions().get(i).name.contains("topdown")) {
+			if (atlas.getRegions().get(i).name.contains("crossbow")) {
 				regions.add(atlas.getRegions().get(i));
 			}
 		}

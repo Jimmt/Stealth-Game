@@ -16,8 +16,8 @@ public class Main {
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		cfg.x = 0;
 		cfg.y = 0;
-		cfg.width = d.width - 20;
-		cfg.height = d.height - 100;
+		cfg.width = 1024;
+		cfg.height = 1024;
 		
 		TexturePacker2.process("C:/Users/Austin/repos/stealth-game/StealthGame-android/assets/images", "C:/Users/Austin/repos/stealth-game/StealthGame-android/assets/image-atlases", "pack");
 

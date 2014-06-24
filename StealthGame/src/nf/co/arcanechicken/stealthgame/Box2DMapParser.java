@@ -26,7 +26,7 @@ public class Box2DMapParser {
 		lines = fileS.split("\\r?\\n");
 
 		TiledMapTileLayer tmtl = (TiledMapTileLayer) map.getMap().getLayers().get(0);
-		
+
 		HashMap<Integer, ArrayList<Line2D>> tileCollisionJoints = new HashMap<Integer, ArrayList<Line2D>>();
 
 		for (int n = 0; n < lines.length; n++) {
@@ -39,13 +39,14 @@ public class Box2DMapParser {
 				String coords[] = cols[m].split(",");
 
 				String start[] = coords[0].split("x");
-				for(int d = 0; d < start.length; d++){
+				for (int d = 0; d < start.length; d++) {
 				}
 				String end[] = coords[1].split("x");
-				for(int e = 0; e < end.length; e++){
+				for (int e = 0; e < end.length; e++) {
 				}
-				tmp.add(new Line2D.Float(Integer.parseInt(start[0]), 64 - Integer.parseInt(start[1]),
-						Integer.parseInt(end[0]), 64 - Integer.parseInt(end[1])));
+				tmp.add(new Line2D.Float(Integer.parseInt(start[0]), 64 - Integer
+						.parseInt(start[1]), Integer.parseInt(end[0]), 64 - Integer
+						.parseInt(end[1])));
 			}
 
 			tileCollisionJoints.put(Integer.valueOf(tileNo), tmp);
@@ -57,21 +58,15 @@ public class Box2DMapParser {
 				Cell cell = tmtl.getCell(i, j);
 				try {
 					int tileType = cell.getTile().getId();
-					
 
 					for (int k = 0; k < tileCollisionJoints.get(tileType).size(); k++) {
-						Line2D line = new Line2D.Float(i * 64f
-								+ (float) tileCollisionJoints.get(tileType).get(k).getX1(), j * 64f
-								+ (float) tileCollisionJoints.get(tileType).get(k).getY1(), i * 64f
-								+ (float) tileCollisionJoints.get(tileType).get(k).getX2(), j * 64f
+						Line2D line = new Line2D.Float(i * Constants.TILE_SIZE
+								+ (float) tileCollisionJoints.get(tileType).get(k).getX1(), j * Constants.TILE_SIZE
+								+ (float) tileCollisionJoints.get(tileType).get(k).getY1(), i * Constants.TILE_SIZE
+								+ (float) tileCollisionJoints.get(tileType).get(k).getX2(), j * Constants.TILE_SIZE
 								+ (float) tileCollisionJoints.get(tileType).get(k).getY2());
 						lines2d.add(line);
-						if(tileType == 5 || tileType == 10){
-						System.err.println(line.getP1() + " " + line.getP2());
-						}
 					}
-
-					
 
 				} catch (NullPointerException npe) {
 
@@ -81,22 +76,30 @@ public class Box2DMapParser {
 
 		}
 
-		
 		for (int i = 0; i < lines2d.size; i++) {
 			EdgeShape shape = new EdgeShape();
-			lines2d.get(i).setLine((float) lines2d.get(i).getX1() / 80f, (float) lines2d.get(i).getY1() / 80f,
-					(float) lines2d.get(i).getX2() / 80f, (float) lines2d.get(i).getY2() / 80f);
+			
+			int tileX = (int)(lines2d.get(i).getX1() / Constants.TILE_SIZE);
+			int tileY = (int)(lines2d.get(i).getY1() / Constants.TILE_SIZE);
+			map.getCollisions()[tileX][tileY] = true;
+			
+			lines2d.get(i).setLine((float) lines2d.get(i).getX1() * Constants.scale,
+					(float) lines2d.get(i).getY1() * Constants.scale, (float) lines2d.get(i).getX2() * Constants.scale,
+					(float) lines2d.get(i).getY2() * Constants.scale);
 			shape.set((float) lines2d.get(i).getX1(), (float) lines2d.get(i).getY1(),
 					(float) lines2d.get(i).getX2(), (float) lines2d.get(i).getY2());
-			System.out.println(lines2d.get(i).getP1() + " " + lines2d.get(i).getP2());
-		
-		BodyDef edgeDef = new BodyDef();
-		edgeDef.type = BodyType.StaticBody;
-		Body edge = world.createBody(edgeDef);
-		FixtureDef edgeFixtureDef = new FixtureDef();
-		edgeFixtureDef.shape = shape;
-		edge.createFixture(edgeFixtureDef);
-		shape.dispose();
+
+			
+			
+			BodyDef edgeDef = new BodyDef();
+			edgeDef.type = BodyType.StaticBody;
+			Body edge = world.createBody(edgeDef);
+			FixtureDef edgeFixtureDef = new FixtureDef();
+			edgeFixtureDef.filter.categoryBits = Bits.OBSTACLE;
+			edgeFixtureDef.shape = shape;
+			edge.createFixture(edgeFixtureDef);
+			edge.setUserData(new Box2DUserData("obstacle", null));
+			shape.dispose();
 		}
 	}
 }

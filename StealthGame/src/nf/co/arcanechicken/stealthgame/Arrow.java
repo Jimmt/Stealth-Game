@@ -13,26 +13,32 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 
-public class Bullet extends Image{
+public class Arrow extends Image{
 	private Body body;
-	private float width = 0.2f, height = 0.7f;
+	private float width, height;
 	
-	private Bullet(AtlasRegion region, World world, float x, float y, float angle){
+	private Arrow(AtlasRegion region, World world, float x, float y, float angle){
 		super(region);
 		
+		width = getDrawable().getMinWidth() * Constants.scale;
+		height = getDrawable().getMinHeight() * Constants.scale;
+		
 		PolygonShape box = new PolygonShape();
-		box.setAsBox(width, height);
+		box.setAsBox(width / 2, height / 2);
 		BodyDef bd = new BodyDef();
 		bd.type = BodyType.DynamicBody;
 		bd.fixedRotation = true;
+		bd.bullet = true;
 		body = world.createBody(bd);
 		FixtureDef fd = new FixtureDef();
 		fd.shape = box;
-		fd.isSensor = true;
+		fd.friction = 100000.0f;
+		fd.filter.categoryBits = Bits.ARROW;
+		fd.filter.maskBits = Bits.OBSTACLE;
 		body.createFixture(fd);
 		setSize(width, height);
 		setScaling(Scaling.stretch);
-		angle += MathUtils.PI / 2;
+		angle += 3 * MathUtils.PI / 2;
 		body.setTransform(x, y, angle);
 		setPosition(body.getPosition().x - width / 2, body.getPosition().y - height / 2);
 		setRotation(MathUtils.radiansToDegrees * angle);
@@ -44,14 +50,14 @@ public class Bullet extends Image{
 		return body;
 	}
 	
-	public static Bullet create(TextureAtlas atlas, World world, float x, float y, float angle, String name){
+	public static Arrow create(TextureAtlas atlas, World world, float x, float y, float angle, String name){
 		AtlasRegion region = null;
 		for(int i = 0; i < atlas.getRegions().size; i++){
 			if(atlas.getRegions().get(i).name.contains(name)){
 				region = atlas.getRegions().get(i);
 			} 
 		}
-		return new Bullet(region, world, x, y, angle);
+		return new Arrow(region, world, x, y, angle);
 	}
 	
 	@Override

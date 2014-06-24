@@ -5,49 +5,63 @@ filter: Nearest,Nearest
 repeat: none
 arms
   rotate: false
-  xy: 916, 477
+  xy: 960, 451
   size: 43, 27
   orig: 43, 27
   offset: 0, 0
   index: -1
+arrow
+  rotate: false
+  xy: 874, 287
+  size: 7, 52
+  orig: 7, 52
+  offset: 0, 0
+  index: -1
 char-back
   rotate: false
-  xy: 874, 367
+  xy: 874, 341
   size: 40, 137
   orig: 40, 137
   offset: 0, 0
   index: -1
 char-front
   rotate: false
-  xy: 644, 144
+  xy: 644, 118
   size: 41, 137
   orig: 41, 137
   offset: 0, 0
   index: -1
 char-side
   rotate: false
-  xy: 687, 145
+  xy: 687, 119
   size: 21, 136
   orig: 21, 136
   offset: 0, 0
   index: -1
+crossbow
+  rotate: false
+  xy: 916, 437
+  size: 42, 41
+  orig: 42, 41
+  offset: 0, 0
+  index: -1
+enemy
+  rotate: false
+  xy: 710, 214
+  size: 42, 41
+  orig: 42, 41
+  offset: 0, 0
+  index: -1
 head
   rotate: false
-  xy: 874, 295
+  xy: 710, 198
   size: 14, 14
   orig: 14, 14
   offset: 0, 0
   index: -1
-laser_blue
-  rotate: false
-  xy: 710, 227
-  size: 13, 54
-  orig: 13, 54
-  offset: 0, 0
-  index: -1
 leftarm
   rotate: false
-  xy: 916, 461
+  xy: 754, 241
   size: 12, 14
   orig: 12, 14
   offset: 0, 0
@@ -61,43 +75,43 @@ leftforearm
   index: -1
 new
   rotate: false
-  xy: 874, 311
+  xy: 2, 22
   size: 30, 54
   orig: 30, 54
   offset: 0, 0
   index: -1
 rightarm
   rotate: false
-  xy: 76, 87
+  xy: 916, 420
   size: 14, 15
   orig: 14, 15
   offset: 0, 0
   index: -1
 rightforearm
   rotate: false
-  xy: 644, 123
+  xy: 644, 97
   size: 21, 19
   orig: 21, 19
   offset: 0, 0
   index: -1
 splash
   rotate: false
-  xy: 2, 104
+  xy: 2, 78
   size: 640, 400
   orig: 640, 400
   offset: 0, 0
   index: -1
 test
   rotate: false
-  xy: 644, 283
+  xy: 644, 257
   size: 228, 221
   orig: 228, 221
   offset: 0, 0
   index: -1
 topdown
   rotate: false
-  xy: 2, 22
-  size: 72, 80
-  orig: 72, 80
+  xy: 34, 35
+  size: 42, 41
+  orig: 42, 41
   offset: 0, 0
   index: -1
